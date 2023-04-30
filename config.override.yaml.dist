@@ -23,5 +23,5 @@ app:
     slowModeTime: 15
     ignoreMentionInPromps: false #todo
     reactionWords: 
-    - "<YouBotName>"
-    - '<@yourDiscordId>'
+        - "<YourBotName>"
+        - '<@yourDiscordId>'
