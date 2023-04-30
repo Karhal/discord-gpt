@@ -1,0 +1,16 @@
+vendor
+*.sqlite
+messages.json
+configSignal.json
+*.sqlite-shm
+*.sqlite-wal
+*.jsonl
+.DS_Store
+extracted_prompts.jsonl
+data/*
+config.override.yaml
+var/
+.phpunit.result.cache
+*.log
+medias/img/*
+.php-cs-fixer.cache

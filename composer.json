@@ -1,0 +1,17 @@
+{
+    "require": {
+        "team-reflex/discord-php": "^7.3",
+        "symfony/yaml": "^6.2",
+        "symfony/console": "^6.2",
+        "orhanerday/open-ai": "^3.3",
+        "monolog/monolog": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bot\\":        "src/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}

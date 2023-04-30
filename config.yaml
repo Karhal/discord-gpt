@@ -1,0 +1,13 @@
+openai:
+    historyGeneratedPrompt: 5
+    rewardEmoji: "🍪"
+    historyTtl: 600 # secondes
+    timeZoneDelta: 0
+app:
+    ignoreMyself: false  #ignore the bot's answers in the generated prompt 
+    mentionsOnly: false
+    chanceToAddOneMoreAnswer: 10 # %
+    slowModeTime: 15
+    ignoreMentionInPromps: false #todo
+    reactionWords: 
+        - "Hello"
