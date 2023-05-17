@@ -23,6 +23,7 @@ class PromptHandler
         $listCount = count($channelList);
         $externalName = $this->config['botExternalName'];
         $back = $this->config['historyGeneratedPrompt'];
+        $nowDateTime = (new \DateTime())->format('Y-m-d h:i');
 
         if ($listCount > $back) {
             $start = $listCount - $back;
@@ -36,7 +37,7 @@ class PromptHandler
             }
             $prompt .= "{$datetime} - {$channelList[$i]->author}: {$channelList[$i]->message}\n";
         }
-        $prompt .= $externalName.':';
+        $prompt .= "{$nowDateTime} - {$externalName} :";
 
         return $prompt;
     }
