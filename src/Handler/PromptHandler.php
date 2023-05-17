@@ -29,11 +29,12 @@ class PromptHandler
         }
 
         for ($i = $start; $i < $listCount; ++$i) {
+            $datetime = (new \DateTime())->setTimestamp($channelList[$i]->timestamp)->format('Y-m-d h:i');
             if ($this->ignoreMyself && $channelList[$i]->author === $externalName
-                 || DateUtils::isTimestampExpired(time()-$this->config['timeZoneDelta'], $channelList[$i]->timestamp, $this->config['historyTtl'])) {
+                 || DateUtils::isTimestampExpired(time() - $this->config['timeZoneDelta'], $channelList[$i]->timestamp, $this->config['historyTtl'])) {
                 continue;
             }
-            $prompt .= "{$channelList[$i]->author}: {$channelList[$i]->message}\n";
+            $prompt .= "{$datetime} - {$channelList[$i]->author}: {$channelList[$i]->message}\n";
         }
         $prompt .= $externalName.':';
 
