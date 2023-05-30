@@ -14,7 +14,7 @@ class MessageHandler
         $this->config = $config->getConfig();
     }
 
-    public function createMessage(string $author, string $authorId, string $content, string $id, string $dateTime, int $channelId): Message
+    public function createMessage(string $author, string $authorId, string $content, string $id, string $dateTime, int $channelId, bool $isAssistant = false): Message
     {
         $content = str_replace($this->config['discord']['botUserId'], $this->config['openai']['botExternalName'], $content);
         $message = new Message();
@@ -24,6 +24,7 @@ class MessageHandler
         $message->message = $content;
         $message->channelId = $channelId;
         $message->timestamp = (new \DateTime($dateTime))->getTimestamp();
+        $message->isAssistant = $isAssistant;
         ;
 
         return $message;

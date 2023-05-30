@@ -23,7 +23,7 @@ $discord->on('ready', function (Discord $discord) use ($application) {
 
     $discord->on(Event::MESSAGE_CREATE, function (Message $message, Discord $discord) use ($application) {
         $channel = $message->channel;
-        $appMessage = $application->messageHandler->createMessage($message->author->username, $message->author->id, $message->content, $message->id, $message->timestamp, $channel->id);
+        $appMessage = $application->messageHandler->createMessage($message->author->username, $message->author->id, $message->content, $message->id, $message->timestamp, $channel->id, ($discord->user->id === $message->author->id));
         $application->historyListHandler->addMessageToHistory($application->historyList, $appMessage);
 
         sleep(rand(0, 2));

@@ -19,7 +19,7 @@ class OpenAIClient
         $this->logger = $logger;
     }
 
-    public function getCompletion(string $prompt): string
+    public function getCompletion(array $prompt): string
     {
         $response = $this->get($prompt);
         $content = json_decode($response, true);
@@ -28,18 +28,17 @@ class OpenAIClient
             ++$this->tries;
             if ($this->tries >= 5) {
                 return 'I\'m lagging';
-            } else {
-                sleep(1);
-                echo 'RETRY'.PHP_EOL;
-
-                return $this->getCompletion($prompt);
             }
+            sleep(1);
+            echo 'RETRY'.PHP_EOL;
+
+            return $this->getCompletion($prompt);
         }
 
         return $content['choices'][0]['message']['content'];
     }
 
-    private function get(string $prompt): string
+    private function get(array $prompt): string
     {
         $ch = curl_init(self::BASE_URL);
         $conf = $this->getConf($prompt);
@@ -49,7 +48,6 @@ class OpenAIClient
             'Authorization: Bearer '.$this->config['key'],
         ]);
         curl_setopt($ch, CURLOPT_POST, true);
-
         curl_setopt($ch, CURLOPT_POSTFIELDS, $conf);
 
         $this->logger->info(json_encode($prompt), ['conf' => $this->config['config']]);
@@ -64,10 +62,10 @@ class OpenAIClient
         return $response;
     }
 
-    private function getConf(string $prompt): string
+    private function getConf(array $prompt): string
     {
         $data = $this->config['config'];
-        $data['messages'][1]['content'] = $prompt;
+        $data['messages'] = array_merge($data['messages'], $prompt);
 
         return json_encode($data);
     }

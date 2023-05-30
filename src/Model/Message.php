@@ -10,4 +10,5 @@ class Message
     public string $id;
     public int $timestamp;
     public int $channelId;
+    public bool $isAssistant = false;
 }
