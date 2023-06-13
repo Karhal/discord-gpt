@@ -16,10 +16,10 @@ class PromptHandler
         $this->ignoreMyself = $config->getConfig()['app']['ignoreMyself'];
     }
 
-    public function generatePromptFromHistory($channelList): string
+    public function generatePromptFromHistory($channelList): array
     {
         $start = 0;
-        $prompt = '';
+        $prompt = [];
         $listCount = count($channelList);
         $externalName = $this->config['botExternalName'];
         $back = $this->config['historyGeneratedPrompt'];
@@ -35,9 +35,12 @@ class PromptHandler
                  || DateUtils::isTimestampExpired(time() - $this->config['timeZoneDelta'], $channelList[$i]->timestamp, $this->config['historyTtl'])) {
                 continue;
             }
-            $prompt .= "{$datetime} - {$channelList[$i]->author}: {$channelList[$i]->message}\n";
+            $actor = 'user';
+            if ($channelList[$i]->isAssistant) {
+                $actor = 'assistant';
+            }
+            $prompt[] = ['role' => $actor, 'content' => "{$channelList[$i]->message}\n"];
         }
-        $prompt .= "{$nowDateTime} - {$externalName} :";
 
         return $prompt;
     }
