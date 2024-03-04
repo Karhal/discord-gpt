@@ -16,30 +16,32 @@ class PromptHandler
         $this->ignoreMyself = $config->getConfig()['app']['ignoreMyself'];
     }
 
-    public function generatePromptFromHistory($channelList): array
+    public function generatePromptFromHistory(array $channelList): array
     {
         $start = 0;
         $prompt = [];
         $listCount = count($channelList);
         $externalName = $this->config['botExternalName'];
         $back = $this->config['historyGeneratedPrompt'];
-        $nowDateTime = (new \DateTime())->format('Y-m-d h:i');
 
         if ($listCount > $back) {
             $start = $listCount - $back;
         }
 
         for ($i = $start; $i < $listCount; ++$i) {
-            $datetime = (new \DateTime())->setTimestamp($channelList[$i]->timestamp)->format('Y-m-d h:i');
             if ($this->ignoreMyself && $channelList[$i]->author === $externalName
                  || DateUtils::isTimestampExpired(time() - $this->config['timeZoneDelta'], $channelList[$i]->timestamp, $this->config['historyTtl'])) {
                 continue;
             }
             $actor = 'user';
+            $nickname = $channelList[$i]->author;
+            $message = "($nickname): {$channelList[$i]->message}\n";
             if ($channelList[$i]->isAssistant) {
                 $actor = 'assistant';
+                $nickname = '';
+                $message = "{$channelList[$i]->message}\n";
             }
-            $prompt[] = ['role' => $actor, 'content' => "{$channelList[$i]->message}\n"];
+            $prompt[] = ['role' => $actor, 'content' => "$message"];
         }
 
         return $prompt;
