@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "069884b8ae406a533f7fc9dca28e0646",
+    "content-hash": "6216762f0bb47c00e5f721bc3d0d8888",
     "packages": [
         {
             "name": "discord-php/http",
@@ -577,16 +577,16 @@
         },
         {
             "name": "orhanerday/open-ai",
-            "version": "4.7.2",
+            "version": "5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orhanerday/open-ai.git",
-                "reference": "990d811759d53dbfdb42b2271155088fa2ca20b1"
+                "reference": "48c94a922318a33dbc15436e8bc086f00d869a4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orhanerday/open-ai/zipball/990d811759d53dbfdb42b2271155088fa2ca20b1",
-                "reference": "990d811759d53dbfdb42b2271155088fa2ca20b1",
+                "url": "https://api.github.com/repos/orhanerday/open-ai/zipball/48c94a922318a33dbc15436e8bc086f00d869a4e",
+                "reference": "48c94a922318a33dbc15436e8bc086f00d869a4e",
                 "shasum": ""
             },
             "require": {
@@ -624,7 +624,7 @@
             ],
             "support": {
                 "issues": "https://github.com/orhanerday/open-ai/issues",
-                "source": "https://github.com/orhanerday/open-ai/tree/4.7.2"
+                "source": "https://github.com/orhanerday/open-ai/tree/5.0"
             },
             "funding": [
                 {
@@ -632,7 +632,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-05-15T07:52:19+00:00"
+            "time": "2023-11-30T06:47:07+00:00"
         },
         {
             "name": "psr/container",
@@ -4683,5 +4683,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
