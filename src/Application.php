@@ -3,6 +3,7 @@
 namespace Bot;
 
 use Bot\Client\OpenAIClient;
+use Bot\Client\OpenAIVisionClient;
 use Bot\Handler\BotHandler;
 use Bot\Handler\HistoryListHandler;
 use Bot\Handler\MessageHandler;
@@ -22,6 +23,7 @@ class Application
     public OpenAIClient $openAIClient;
     public HistoryList $historyList;
     public MessageHandler $messageHandler;
+    public OpenAIVisionClient $openAIVisionClient;
 
     public function __construct()
     {
@@ -32,6 +34,7 @@ class Application
         $this->historyListHandler = new HistoryListHandler();
         $this->botHandler = new BotHandler($this->configuration);
         $this->openAIClient = new OpenAIClient($this->configuration, $this->logger, $this->promptHandler);
+        $this->openAIVisionClient = new OpenAIVisionClient($this->configuration, $this->logger, $this->promptHandler);
         $this->historyList = new HistoryList();
         $this->messageHandler = new MessageHandler($this->configuration);
     }

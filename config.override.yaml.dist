@@ -16,6 +16,13 @@ openai:
     rewardEmoji: "🍪"
     historyTtl: 600 # secondes
     timeZoneDelta: 0 #the diff between the server you are running the bot on and the Discord
+openai-vision:
+    key: '<YourOpenAIKey>'
+    config:
+        model: 'gpt-4-vision-preview'
+        messages:
+            - role: "user"
+              content: ""
 app:
     ignoreMyself: false
     mentionsOnly: false

@@ -3,6 +3,13 @@ openai:
     rewardEmoji: "🍪"
     historyTtl: 600 # secondes
     timeZoneDelta: 0
+
+openai-vsion:
+    historyGeneratedPrompt: 5
+    rewardEmoji: "🍪"
+    historyTtl: 600 # secondes
+    timeZoneDelta: 0
+
 app:
     ignoreMyself: false  #ignore the bot's answers in the generated prompt 
     mentionsOnly: false

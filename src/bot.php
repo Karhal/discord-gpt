@@ -34,8 +34,25 @@ $discord->on('ready', function (Discord $discord) use ($application) {
 
         $channel->broadcastTyping()->then(function () use ($application, $channel) {
             $channelList = $application->historyList->getChannelList($channel->id);
-            $prompt = $application->promptHandler->generatePromptFromHistory($channelList);
-            $completion = $application->openAIClient->getCompletion($prompt);
+            $conversationHistory = $application->promptHandler->generatePromptFromHistory($channelList);
+
+            //is it an image ? 
+            //Yes, then send it to the vision API
+            //No, then send it to the chat API
+            if ($application->promptHandler->hasImage($conversationHistory) 
+            && $image = $application->promptHandler->extractImage($conversationHistory)) {
+                
+                $completion = $application->openAIVisionClient->getDescription($image);
+                
+                if (empty($completion)) {
+                    return;
+                }
+                if ($completion !== end($channelList)->message) {
+                    $channel->sendMessage($completion);
+                }
+                return;
+            }
+            $completion = $application->openAIClient->getCompletion($conversationHistory);
 
             if (empty($completion)) {
                 return;
