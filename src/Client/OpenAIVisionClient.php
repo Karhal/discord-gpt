@@ -19,9 +19,10 @@ class OpenAIVisionClient
         $this->logger = $logger;
     }
 
-    public function getDescription(array $prompt): string
+    public function getDescription(string $imageUrl): string
     {
-        $response = $this->get($prompt);
+
+        $response = $this->get($imageUrl);
         $content = json_decode($response, true);
 
         if (!array_key_exists('choices', $content)) {
@@ -32,25 +33,26 @@ class OpenAIVisionClient
             sleep(1);
             echo 'RETRY'.PHP_EOL;
 
-            return $this->getDescription($prompt);
+            return $this->getDescription($imageUrl);
         }
 
         return $content['choices'][0]['message']['content'];
     }
 
-    private function get(array $prompt): string
+    private function get(string $imageUrl): string
     {
         $ch = curl_init(self::BASE_URL);
-        $conf = $this->getConf($prompt);
+        $body = $this->completePromptWithImageData($imageUrl);
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Authorization: Bearer '.$this->config['key'],
         ]);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $conf);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 
-        $this->logger->info(json_encode($prompt), ['conf' => $this->config['config']]);
+        $this->logger->info(json_encode($body), ['conf' => $this->config['config']]);
         $response = curl_exec($ch);
         $this->logger->info($response);
 
@@ -62,22 +64,27 @@ class OpenAIVisionClient
         return $response;
     }
 
-    private function getConf(array $prompt): string
+    private function completePromptWithImageData(string $imageUrl): string
     {
         $data = $this->config['config'];
-        $data['messages'] = array_merge($data['messages'], $prompt);
+        $data['messages'] = [
+            [
+                "role" => "user",
+                "content" => [
+                    [
+                        "type" => "text",
+                        "text" => "What’s in this image?"
+                    ],
+                    [
+                        "type" => "image_url",
+                        "image_url" => [
+                            "url" => "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                        ]
+                    ]
+                ]
+            ]
+        ];
 
         return json_encode($data);
-    }
-
-    public function hasImage($message) : bool
-    {
-        return preg_match('/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/', $message);
-    }
-
-    public function extractImage($message) : string
-    {
-        preg_match('/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/', $message, $matches);
-        return $matches[0];
     }
 }

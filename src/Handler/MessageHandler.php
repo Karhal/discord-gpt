@@ -29,4 +29,16 @@ class MessageHandler
 
         return $message;
     }
+
+    public function hasImage(Message $message) : bool
+    {
+        return preg_match('/(http(s?):)([\/.|\\w|\\s|-])*\.(?:jpg|gif|png)/', $message->message);
+        
+    }
+
+    public function extractImage(Message $message) : string
+    {
+        preg_match('/(http(s?):)([\/.|\\w|\\s|-])*\.(?:jpg|gif|png)/', $message->message, $matches);
+        return $matches[0];
+    }
 }

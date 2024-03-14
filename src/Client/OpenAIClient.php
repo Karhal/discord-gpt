@@ -41,14 +41,15 @@ class OpenAIClient
     private function get(array $prompt): string
     {
         $ch = curl_init(self::BASE_URL);
-        $conf = $this->getConf($prompt);
+        $body = $this->completePromptWithMessagesHistory($prompt);
+        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Authorization: Bearer '.$this->config['key'],
         ]);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $conf);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 
         $this->logger->info(json_encode($prompt), ['conf' => $this->config['config']]);
         $response = curl_exec($ch);
@@ -62,7 +63,7 @@ class OpenAIClient
         return $response;
     }
 
-    private function getConf(array $prompt): string
+    private function completePromptWithMessagesHistory(array $prompt): string
     {
         $data = $this->config['config'];
         $data['messages'] = array_merge($data['messages'], $prompt);

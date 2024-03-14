@@ -32,26 +32,21 @@ $discord->on('ready', function (Discord $discord) use ($application) {
             return;
         }
 
-        $channel->broadcastTyping()->then(function () use ($application, $channel) {
+        $channel->broadcastTyping()->then(function () use ($application, $channel, $appMessage) {
             $channelList = $application->historyList->getChannelList($channel->id);
             $conversationHistory = $application->promptHandler->generatePromptFromHistory($channelList);
 
-            //is it an image ? 
-            //Yes, then send it to the vision API
-            //No, then send it to the chat API
-            if ($application->promptHandler->hasImage($conversationHistory) 
-            && $image = $application->promptHandler->extractImage($conversationHistory)) {
-                
-                $completion = $application->openAIVisionClient->getDescription($image);
-                
-                if (empty($completion)) {
-                    return;
+            if ($application->messageHandler->hasImage($appMessage) 
+            && $imageUrl = $application->messageHandler->extractImage($appMessage)) {
+
+                $imageDescription = $application->openAIVisionClient->getDescription($imageUrl);
+
+                if (!empty($imageDescription)) {
+                    $imageDescriptionMessage = $application->messageHandler->createMessage($appMessage->author, $appMessage->id.rand(), "(sent a picture described as: ".$imageDescription.")", uniqid(), (new \DateTime())->format('Y-m-d H:i:s'), $channel->id, true);
+                    $application->historyListHandler->addMessageToHistory($application->historyList, $imageDescriptionMessage);
                 }
-                if ($completion !== end($channelList)->message) {
-                    $channel->sendMessage($completion);
-                }
-                return;
             }
+
             $completion = $application->openAIClient->getCompletion($conversationHistory);
 
             if (empty($completion)) {
