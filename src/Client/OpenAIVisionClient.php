@@ -21,7 +21,6 @@ class OpenAIVisionClient
 
     public function getDescription(string $imageUrl): string
     {
-
         $response = $this->get($imageUrl);
         $content = json_decode($response, true);
 
@@ -30,7 +29,7 @@ class OpenAIVisionClient
             if ($this->tries >= 5) {
                 return 'I\'m lagging';
             }
-            sleep(1);
+            sleep(2);
             echo 'RETRY'.PHP_EOL;
 
             return $this->getDescription($imageUrl);
@@ -78,12 +77,14 @@ class OpenAIVisionClient
                     [
                         "type" => "image_url",
                         "image_url" => [
-                            "url" => "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                            "url" => $imageUrl
                         ]
                     ]
                 ]
             ]
         ];
+
+        //$data['max_tokens'] = "300";
 
         return json_encode($data);
     }

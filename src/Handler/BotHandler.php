@@ -9,23 +9,17 @@ class BotHandler
 {
     private $configuration;
     private ?int $lastMessageTimestamp = null;
+    private MessageHandler $messageHandler;
 
-    public function __construct(Configuration $configuration)
+    public function __construct(Configuration $configuration, MessageHandler $messageHandler)
     {
         $this->configuration = $configuration->getConfig();
+        $this->messageHandler = $messageHandler;
     }
 
     public function shouldIAnswer(string $userId, Message $message): bool
     {
-        $rand = mt_rand(1, 100);
-        $randBool = $rand <= $this->configuration['app']['chanceToAddOneMoreAnswer'];
         if ($userId === $message->authorId) {
-            if ($randBool) {
-                $rand = mt_rand(1, 100);
-
-                return true;
-            }
-
             return false;
         }
 

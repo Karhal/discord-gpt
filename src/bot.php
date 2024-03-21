@@ -7,7 +7,6 @@ include __DIR__.'/../vendor/autoload.php';
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\WebSockets\MessageReaction;
-use Discord\Parts\WebSockets\PreenceUpdate;
 use Discord\WebSockets\Event;
 use Discord\WebSockets\Intents;
 
@@ -34,26 +33,31 @@ $discord->on('ready', function (Discord $discord) use ($application) {
 
         $channel->broadcastTyping()->then(function () use ($application, $channel, $appMessage) {
             $channelList = $application->historyList->getChannelList($channel->id);
-            $conversationHistory = $application->promptHandler->generatePromptFromHistory($channelList);
 
             if ($application->messageHandler->hasImage($appMessage) 
             && $imageUrl = $application->messageHandler->extractImage($appMessage)) {
 
                 $imageDescription = $application->openAIVisionClient->getDescription($imageUrl);
-
+                var_dump($imageDescription);
                 if (!empty($imageDescription)) {
-                    $imageDescriptionMessage = $application->messageHandler->createMessage($appMessage->author, $appMessage->id.rand(), "(sent a picture described as: ".$imageDescription.")", uniqid(), (new \DateTime())->format('Y-m-d H:i:s'), $channel->id, true);
+                    $imageDescriptionMessage = $application->messageHandler->createMessage($appMessage->author, $appMessage->id.rand(), "sent a picture described as: ".$imageDescription, uniqid(), (new \DateTime())->format('Y-m-d H:i:s'), $channel->id, true);
                     $application->historyListHandler->addMessageToHistory($application->historyList, $imageDescriptionMessage);
                 }
             }
 
-            $completion = $application->openAIClient->getCompletion($conversationHistory);
-
+            $conversationHistory = $application->promptHandler->generatePromptFromHistory($channelList);
+            $completion = json_decode($application->openAIClient->getCompletion($conversationHistory));
+            
             if (empty($completion)) {
                 return;
             }
+
+            if($completion->image !== "false") {
+                $application->messageHandler->generateAndSendImage($completion, $application, $channel);
+            }
+
             if ($completion !== end($channelList)->message) {
-                $channel->sendMessage($completion);
+                $channel->sendMessage($completion->response);
             }
         });
     });
@@ -68,5 +72,6 @@ $discord->on('ready', function (Discord $discord) use ($application) {
         $application->promptHandler->extractPromptFileFromChannelList($channelList, $messageReaction->message_id);
     });
 });
+
 
 $discord->run();

@@ -41,4 +41,20 @@ class MessageHandler
         preg_match('/(http(s?):)([\/.|\\w|\\s|-])*\.(?:jpg|gif|png)/', $message->message, $matches);
         return $matches[0];
     }
+
+    public function generateAndSendImage($completion, $application, $channel) {
+        var_dump($completion->image_prompt);
+        $image = json_decode($application->openAIDalleClient->generateImage($completion->image_prompt));
+        if(property_exists($image, 'data') === false) {
+            echo "data not found, trying again\n";
+            $image = json_decode($application->openAIDalleClient->generateImage($completion->image_prompt));
+        }
+        $application->logger->info("Image generated: ".$image->data[0]->url);
+        $file = file_get_contents($image->data[0]->url);
+        $filename = base64_encode(time());
+        $filePath = "./tmp/".$filename.".png";
+        file_put_contents($filePath, $file);
+        $channel->sendFile($filePath);
+        unlink($filePath);
+    }
 }

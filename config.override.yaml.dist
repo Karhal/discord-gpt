@@ -23,6 +23,13 @@ openai-vision:
         messages:
             - role: "user"
               content: ""
+openai-dalle:
+    key: '<YourOpenAIKey>'
+    config:
+        model: 'dall-e-3'
+        n:1
+        size: '1024x1024'
+
 app:
     ignoreMyself: false
     mentionsOnly: false

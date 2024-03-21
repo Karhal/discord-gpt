@@ -24,6 +24,7 @@ class PromptHandlerTest extends TestCase
         $conf = new Configuration();
         $handler = $this->getHandler();
         $historyListandler = new HistoryListHandler();
+        $messageFromBob = "Bonjour comment ça va ?";
 
         $oldMessage = new Message();
         $oldMessage->author = 'Bob';
@@ -34,7 +35,7 @@ class PromptHandlerTest extends TestCase
         $message = new Message();
         $message->author = 'Bob';
         $message->channelId = 1;
-        $message->message = 'Bonjour comment ça va ?';
+        $message->message = $messageFromBob;
         $message->timestamp = (new \DateTime())->getTimestamp();
 
         $historyList = new HistoryList();
@@ -43,7 +44,7 @@ class PromptHandlerTest extends TestCase
         $channelList = $historyList->getChannelList(1);
         $prompt = $handler->generatePromptFromHistory($channelList);
 
-        $this->assertEquals(sprintf("Bob: %s\n%s:", $message->message, $conf->getConfig()['openai']['botExternalName']), $prompt, '');
+        $this->assertEquals(sprintf("(Bob): %s\n",$messageFromBob), $prompt[0]['content']);
     }
 
     private function getHandler(): PromptHandler
