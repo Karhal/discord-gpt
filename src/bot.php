@@ -6,7 +6,6 @@ include __DIR__.'/../vendor/autoload.php';
 
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
-use Discord\Parts\WebSockets\MessageReaction;
 use Discord\WebSockets\Event;
 use Discord\WebSockets\Intents;
 
@@ -19,59 +18,26 @@ $discord = new Discord([
 
 $discord->on('ready', function (Discord $discord) use ($application) {
     echo 'Bot is ready!', PHP_EOL;
-
     $discord->on(Event::MESSAGE_CREATE, function (Message $message, Discord $discord) use ($application) {
-        $channel = $message->channel;
-        $appMessage = $application->messageHandler->createMessage($message->author->username, $message->author->id, $message->content, $message->id, $message->timestamp, $channel->id, ($discord->user->id === $message->author->id));
-        $application->historyListHandler->addMessageToHistory($application->historyList, $appMessage);
-
-        sleep(rand(0, 2));
-
-        if (!$application->botHandler->shouldIAnswer($discord->user->id, $appMessage)) {
-            return;
-        }
-
-        $channel->broadcastTyping()->then(function () use ($application, $channel, $appMessage) {
-            $channelList = $application->historyList->getChannelList($channel->id);
-
-            if ($application->messageHandler->hasImage($appMessage) 
-            && $imageUrl = $application->messageHandler->extractImage($appMessage)) {
-
-                $imageDescription = $application->openAIVisionClient->getDescription($imageUrl);
-                var_dump($imageDescription);
-                if (!empty($imageDescription)) {
-                    $imageDescriptionMessage = $application->messageHandler->createMessage($appMessage->author, $appMessage->id.rand(), "sent a picture described as: ".$imageDescription, uniqid(), (new \DateTime())->format('Y-m-d H:i:s'), $channel->id, true);
-                    $application->historyListHandler->addMessageToHistory($application->historyList, $imageDescriptionMessage);
-                }
-            }
-
-            $conversationHistory = $application->promptHandler->generatePromptFromHistory($channelList);
-            $completion = json_decode($application->openAIClient->getCompletion($conversationHistory));
-            
-            if (empty($completion)) {
-                return;
-            }
-
-            if($completion->image !== "false") {
-                $application->messageHandler->generateAndSendImage($completion, $application, $channel);
-            }
-
-            if ($completion !== end($channelList)->message) {
-                $channel->sendMessage($completion->response);
-            }
-        });
-    });
-
-    $discord->on(Event::MESSAGE_REACTION_ADD, function (MessageReaction $messageReaction, Discord $discord) use ($application) {
-        if ($application->configuration->getConfig()['openai']['rewardEmoji'] !== $messageReaction->emoji->name) {
-            return;
-        }
-
-        $channel = $messageReaction->channel;
-        $channelList = $application->historyList->getChannelList($channel->id);
-        $application->promptHandler->extractPromptFileFromChannelList($channelList, $messageReaction->message_id);
+        handleNewMessage($message, $discord, $application);
     });
 });
 
+function handleNewMessage(Message $message, Discord $discord, Application $application)
+{
+    $channel = $message->channel;
+    $appMessage = $application->messageHandler->createMessage($message->author->username, $message->author->id, $message->content, $message->id, $message->timestamp, $channel->id, ($discord->user->id === $message->author->id));
+    
+    if (!$application->botHandler->shouldIAnswer($discord->user->id, $appMessage)) {
+        return;
+    }
 
-$discord->run();
+    $application->historyListHandler->addMessageToHistory($application->historyList, $appMessage);
+
+    sleep(rand(0, 2));
+
+    $channel->broadcastTyping()->then(function () use ($application, $channel, $appMessage) {
+        $application->messageHandler->sendMessage($application, $channel, $appMessage);
+    });
+}
+

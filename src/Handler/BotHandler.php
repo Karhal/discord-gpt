@@ -9,12 +9,10 @@ class BotHandler
 {
     private $configuration;
     private ?int $lastMessageTimestamp = null;
-    private MessageHandler $messageHandler;
 
-    public function __construct(Configuration $configuration, MessageHandler $messageHandler)
+    public function __construct(Configuration $configuration)
     {
         $this->configuration = $configuration->getConfig();
-        $this->messageHandler = $messageHandler;
     }
 
     public function shouldIAnswer(string $userId, Message $message): bool
