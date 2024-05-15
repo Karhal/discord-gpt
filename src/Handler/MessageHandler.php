@@ -76,7 +76,7 @@ class MessageHandler
             return;
         }
     
-        if ($completion->image === true) {
+        if ((bool)$completion->image === true) {
             $application->messageHandler->generateAndSendImage($completion, $application, $channel);
         }
     
