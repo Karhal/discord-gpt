@@ -76,7 +76,9 @@ class MessageHandler
             return;
         }
     
-        if ((bool)$completion->image === true) {
+        echo "prompt";
+        var_dump($completion);
+        if ($completion->image !== "false" && (bool)$completion->image === true) {
             $application->messageHandler->generateAndSendImage($completion, $application, $channel);
         }
     
