@@ -3,7 +3,7 @@
         "team-reflex/discord-php": "^7.3",
         "symfony/yaml": "^6.2",
         "symfony/console": "^6.2",
-        "orhanerday/open-ai": "^4.0",
+        "orhanerday/open-ai": "^5.0",
         "monolog/monolog": "^3.2"
     },
     "autoload": {
